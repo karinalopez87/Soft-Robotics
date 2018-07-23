@@ -1,0 +1,106 @@
+#define PIN_GATE_IN 2
+#define IRQ_GATE_IN  0
+//#define pinLED1 12
+//#define pinLED2 11
+//#define pinLED3 10
+#define pinSound A1
+
+int solenoidPin = 4;    
+int IRpin = A0;  
+int ledPin1 = 12;
+int ledPin2 = 11;
+int ledPin3 = 10;
+
+
+int ledState = LOW;
+unsigned long preMillis = 0; 
+
+void setup() 
+{  
+  Serial.begin(9600);
+  pinMode(solenoidPin, OUTPUT);           
+  pinMode(IRpin, INPUT); 
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(12, OUTPUT);
+  //int pin_val;
+
+//  pin_val = digitalRead(PIN_GATE_IN);
+//  digitalWrite(pinLED1, pin_val); 
+//  digitalWrite(pinLED2, pin_val); 
+//  digitalWrite(pinLED3, pin_val); 
+
+
+  
+}
+
+void loop()
+{
+  
+   
+//  solenoid
+  int volts = analogRead(IRpin);
+  int dist = (6787 / (volts - 3)) - 4;
+
+  if (dist >= 25)
+  {
+  digitalWrite(solenoidPin, HIGH);    
+  delay(500);                      
+  digitalWrite(solenoidPin, LOW);     
+  delay(500);                      
+  }
+  else
+  {
+  digitalWrite(solenoidPin, HIGH);    //Switch Solenoid ON
+  delay(150);                      //Wait 1 Second
+  digitalWrite(solenoidPin, LOW);     //Switch Solenoid OFF
+  delay(150);                      //Wait 1 Second
+  } 
+
+  // sound
+    int value;
+//
+
+  value = analogRead(pinSound);
+//
+  Serial.println(value);
+  unsigned long ms = millis();
+  
+  if(value <= 15)
+  {
+    if( (ms - preMillis) >= 1500)
+    {
+      preMillis = ms;
+      if(ledState == LOW)
+      {
+        ledState = HIGH;
+      } 
+      else 
+      {
+        ledState = LOW;
+     }
+     digitalWrite(11, ledState);
+     digitalWrite(10, ledState);
+    }
+  }
+
+  if(value >= 20)
+  {
+    if( (ms - preMillis) >= 300)
+    {
+      preMillis = ms;
+      if(ledState == LOW)
+      {
+        ledState = HIGH;
+      } 
+      else 
+      {
+        ledState = LOW;
+     }
+     digitalWrite(10, ledState);
+     digitalWrite(11, ledState);
+    }
+  }
+}
+
+  
